@@ -205,10 +205,17 @@ if args.docker and not os.path.exists( "/.dockerenv" ) :
 
 	if not args.interactive :
 		# Copy out the generated package.
-		copyCommand = "docker cp {container}:{uploadFile} ./".format(
+		copyCommand = ""
+		if not args.platform == "windows" :
+			copyCommand = "docker cp {container}:{uploadFile} ./".format(
 			container = containerName,
 			**formatVariables
-		)
+			)
+		else :
+			copyCommand = "docker cp {container}:/home/wine/.wine/drive_c/gafferDependenciesInstall/{uploadFile} ./".format(
+			container = containerName,
+			**formatVariables
+			)
 		sys.stderr.write( copyCommand + "\n" )
 		subprocess.check_call( copyCommand, shell = True )
 

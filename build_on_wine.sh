@@ -21,12 +21,12 @@ winbuildenv buildBlosc.bat
 winbuildenv buildVDB.bat
 winbuildenv buildLLVM.bat
 winbuildenv buildOSL.bat
-winbuildenv buildHDF5.bat
+CMAKE_GENERATOR="\"NMake Makefiles\"" winbuildenv buildHDF5.bat # HDF5 has issues building with JOM
 winbuildenv buildAlembic.bat
 winbuildenv buildXerces.bat
 winbuildenv buildAppleseed.bat
 winbuildenv buildResources.bat
-#winbuildenv buildUSD.bat
+winbuildenv buildUSD.bat # USD has issues building with JOM
 #winbuildenv buildCortex.bat
 winbuildenv buildPyOpenGL.bat
 winbuildenv buildQt.bat
