@@ -2,3 +2,6 @@
 *
 # And then explicitly include just what we want
 !build.py
+!build_on_wine.sh
+!winbuildenv.sh
+#!gafferDependencies-0.46.0.0-windows.tar.gz

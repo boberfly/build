@@ -56,20 +56,20 @@ parser.add_argument(
 
 parser.add_argument(
 	"--arnoldRoot",
-	default = os.environ["ARNOLD_ROOT"],
+	default = os.environ["ARNOLD_ROOT"] if "ARNOLD_ROOT" in os.environ else "",
 	help = "The root of an installation of Arnold 5. "
-	       "Note that if cross-compiling a Linux build "
+	       "Note that if cross-compiling a Linux or Windows build "
 	       "using Docker on a Mac, this must point to "
-	       "a Linux build of Arnold."
+	       "the platform-specific build of Arnold."
 )
 
 parser.add_argument(
 	"--delightRoot",
-	default = os.environ["DELIGHT"],
+	default = os.environ["DELIGHT"] if "DELIGHT" in os.environ else "",
 	help = "The root of an installation of 3Delight 13. "
-	       "Note that if cross-compiling a Linux build "
+	       "Note that if cross-compiling a Linux or Windows build "
 	       "using Docker on a Mac, this must point to "
-	       "a Linux build of 3Delight."
+	       "the platform-specific build of 3Delight."
 )
 
 parser.add_argument(
@@ -101,6 +101,13 @@ parser.add_argument(
 		   "performing the build. This is useful for debugging."
 )
 
+parser.add_argument(
+	"--platform",
+	default = "osx" if sys.platform == "darwin" else "linux",
+	choices = [ "linux", "osx", "windows" ],
+	help = "When docker is enabled, it'll choose a platform to build for."
+)
+
 args = parser.parse_args()
 
 if args.interactive :
@@ -114,61 +121,81 @@ else :
 
 # Check that our environment contains everything we need to do a build.
 
-for envVar in ( "GITHUB_RELEASE_TOKEN", ) :
-	if envVar not in os.environ	:
-		parser.exit( 1,  "{0} environment variable not set".format( envVar ) )
+if args.upload:
+	for envVar in ( "GITHUB_RELEASE_TOKEN", ) :
+		if envVar not in os.environ	:
+			parser.exit( 1,  "{0} environment variable not set".format( envVar ) )
 
 # Check that the paths to the renderers are sane.
 
-libExtension = ".so" if "linux" in sys.platform or args.docker else ".dylib"
+if not "windows" in args.platform:
+	libExtension = ".so" if "linux" in sys.platform or args.docker else ".dylib"
 
-arnoldLib = args.arnoldRoot + "/bin/libai" + libExtension
-if not os.path.exists( arnoldLib ) :
-	parser.exit( 1, "{0} not found\n".format( arnoldLib ) )
+	arnoldLib = args.arnoldRoot + "/bin/libai" + libExtension
+	if not os.path.exists( arnoldLib ) :
+		parser.exit( 1, "{0} not found\n".format( arnoldLib ) )
 
-delightLib = args.delightRoot + "/lib/lib3delight" + libExtension
-if not os.path.exists( delightLib ) :
-	parser.exit( 1, "{0} not found\n".format( delightLib ) )
+	delightLib = args.delightRoot + "/lib/lib3delight" + libExtension
+	if not os.path.exists( delightLib ) :
+		parser.exit( 1, "{0} not found\n".format( delightLib ) )
+else:
+	arnoldLib = args.arnoldRoot + "/lib/ai.lib"
+	if not os.path.exists( arnoldLib ) :
+		parser.exit( 1, "{0} not found\n".format( arnoldLib ) )
+
+	delightLib = args.delightRoot + "/lib/3Delight.lib"
+	if not os.path.exists( delightLib ) :
+		parser.exit( 1, "{0} not found\n".format( delightLib ) )
+
 
 # Build a little dictionary of variables we'll need over and over again
 # in string formatting operations, and use it to figure out what
 # package we will eventually be generating.
 
+releaseToken = "" 
+if "GITHUB_RELEASE_TOKEN" in os.environ: 
+	releaseToken = os.environ["GITHUB_RELEASE_TOKEN"]
+
 formatVariables = {
 	"project" : args.project,
 	"version" : args.version,
 	"upload" : args.upload,
-	"platform" : "osx" if sys.platform == "darwin" else "linux",
+	"platform" : args.platform,
 	"arnoldRoot" : args.arnoldRoot,
 	"delight" : args.delightRoot,
-	"releaseToken" : os.environ["GITHUB_RELEASE_TOKEN"],
+	"releaseToken" : releaseToken,
+	"archiveExt" : "tar.gz" if not "windows" in args.platform else "zip",
+	"imageTag" : "gafferhq-build" if not "windows" in args.platform else "gafferhq-winbuild",
+	"dockerFile" : "Dockerfile" if not "windows" in args.platform else "Dockerfile.win",
 }
 
 if args.project == "gaffer" :
-	formatVariables["uploadFile"] = "{project}-{version}-{platform}.tar.gz".format( **formatVariables )
+	formatVariables["uploadFile"] = "{project}-{version}-{platform}.{archiveExt}".format( **formatVariables )
 else :
-	formatVariables["uploadFile"] = "gafferDependencies-{version}-{platform}.tar.gz".format( **formatVariables )
+	formatVariables["uploadFile"] = "gafferDependencies-{version}-{platform}.{archiveExt}".format( **formatVariables )
 
 # Restart ourselves inside a Docker container so that we use a repeatable
 # build environment.
 
 if args.docker and not os.path.exists( "/.dockerenv" ) :
 
-	imageCommand = "docker build --target {project}-builder -t gafferhq-build .".format( **formatVariables )
+	imageCommand = "docker build --target {project}-builder -t {imageTag} -f {dockerFile} .".format( **formatVariables )
 	sys.stderr.write( imageCommand + "\n" )
 	subprocess.check_call( imageCommand, shell = True )
 
+	containerName = "{imageTag}-{id}".format( imageTag = formatVariables["imageTag"], id = uuid.uuid1() )
 	containerMounts = "-v {arnoldRoot}:/arnold:ro,Z -v {delight}:/delight:ro,Z".format( **formatVariables )
+	containerBashCommand = ""
 	containerEnv = "GITHUB_RELEASE_TOKEN={releaseToken} ARNOLD_ROOT=/arnold DELIGHT=/delight".format( **formatVariables )
-	containerName = "gafferhq-build-{id}".format( id = uuid.uuid1() )
 
 	if args.interactive :
 		containerBashCommand = "{env} bash".format( env = containerEnv )
 	else :
-		containerBashCommand = "{env} ./build.py --project {project} --version {version} --upload {upload}".format( env = containerEnv, **formatVariables )
+		containerBashCommand = "{env} python ./build.py --project {project} --version {version} --upload {upload} --platform {platform}".format( env = containerEnv, **formatVariables )
 
-	containerCommand = "docker run {mounts} --name {name} -i -t gafferhq-build -c '{command}'".format(
+	containerCommand = "docker run {mounts} --name {name} -i -t {imageTag} -c '{command}'".format(
 		name = containerName,
+		imageTag = formatVariables["imageTag"],
 		mounts = containerMounts,
 		command = containerBashCommand
 	)
@@ -195,12 +222,18 @@ if os.path.exists( "/.dockerenv" ) and args.project == "gaffer" :
 	os.environ["DISPLAY"] = ":99"
 
 # Download source code
-
-sourceURL = "https://github.com/GafferHQ/{project}/archive/{version}.tar.gz".format( **formatVariables )
+sourceURL = ""
+if not args.platform == "windows" :
+	sourceURL = "https://github.com/GafferHQ/{project}/archive/{version}.{archiveExt}".format( **formatVariables )
+else :
+	if args.project == "gaffer" :
+		sourceURL = "https://github.com/boberfly/{project}/archive/{version}-windows.tar.gz".format( **formatVariables )
+	else :
+		sourceURL = "https://github.com/boberfly/gafferDependencies/archive/{version}-windows.tar.gz".format( **formatVariables )
 sys.stderr.write( "Downloading source \"%s\"\n" % sourceURL )
 
 sourceDirName = "{project}-{version}-source".format( **formatVariables )
-tarFileName = "{0}.tar.gz".format( sourceDirName )
+tarFileName = "{sourceDirName}.tar.gz".format( sourceDirName = sourceDirName, **formatVariables )
 downloadCommand = "curl -L {0} > {1}".format( sourceURL, tarFileName )
 sys.stderr.write( downloadCommand + "\n" )
 subprocess.check_call( downloadCommand, shell = True )
@@ -234,10 +267,13 @@ if args.project == "gaffer" :
 
 else :
 
-	buildCommand = "env RMAN_ROOT={delight} ARNOLD_ROOT={arnoldRoot} BUILD_DIR={cwd}/gafferDependenciesBuild ./build/buildAll.sh ".format(
-		cwd = os.getcwd(),
-		**formatVariables
-	)
+	if not args.platform == "windows" :
+		buildCommand = "env RMAN_ROOT={delight} ARNOLD_ROOT={arnoldRoot} BUILD_DIR={cwd}/gafferDependenciesBuild ./build/buildAll.sh ".format(
+			cwd = os.getcwd(),
+			**formatVariables
+		)
+	else :
+		buildCommand = "env RMAN_ROOT=Z:\\\\delight ARNOLD_ROOT=Z:\\\\arnold SRC_DIR_NAME={sourceDirName} build_on_wine".format( sourceDirName=sourceDirName )
 
 sys.stderr.write( buildCommand + "\n" )
 subprocess.check_call( buildCommand, shell=True )

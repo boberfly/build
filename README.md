@@ -25,7 +25,10 @@ Build and upload a dependencies release :
 
 Make a Linux release using Docker on a Mac :
 
-`./build.py --docker 1 --arnoldRoot /path/to/linux/arnoldRoot --delightRoot /path/to/linux/delightRoot --version 0.45.0.0 --upload 1`
+`./build.py --docker 1 --arnoldRoot /path/to/linux/arnoldRoot --delightRoot /path/to/linux/delightRoot --version 0.46.0.0 --upload 1`
+
+Make the Windows dependencies using Docker :
+`./build.py --docker 1 --arnoldRoot /path/to/windows/arnoldRoot --delightRoot /path/to/windows/delightRoot --version 0.46.0.0 --platform windows`
 
 Steps remaining to be automated
 -------------------------------

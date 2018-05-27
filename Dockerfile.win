@@ -1,0 +1,36 @@
+FROM boberfly/docker-msvc-wine:latest as dependencies-builder
+
+RUN apt-get install curl -y
+
+# Copy over build script and set an entry point that
+# will use the compiler we want.
+
+COPY --chown=wine:wine build.py /home/wine/.wine/drive_c/build.py
+COPY build_on_wine.sh /usr/bin/build_on_wine
+COPY winbuildenv.sh /usr/bin/winbuildenv
+
+#COPY --chown=wine:wine gafferDependencies-0.46.0.0-windows.tar.gz /home/wine/.wine/drive_c/gafferDependencies-0.46.0.0-windows.tar.gz
+
+USER wine:wine
+
+ENTRYPOINT [ "bash" ]
+
+# Now we define a second image, derived from the
+# one above. This adds on the extra stuff needed
+# to build Gaffer itself.
+
+FROM dependencies-builder as gaffer-builder
+
+# Install packages needed to generate the
+# Gaffer documentation. Note that we are
+# limited to Sphinx 1.4 because recommonmark
+# is incompatible with later versions.
+
+#RUN python pip install sphinx==1.4 sphinx_rtd_theme recommonmark
+
+#RUN choco install inkscape -y
+
+# Make sure everything runs in a bash shell with the
+# right dev toolset.
+
+ENTRYPOINT [ "bash" ]
