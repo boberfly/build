@@ -212,7 +212,7 @@ if args.docker and not os.path.exists( "/.dockerenv" ) :
 			**formatVariables
 			)
 		else :
-			copyCommand = "docker cp {container}:/home/wine/.wine/drive_c/gafferDependenciesInstall/{uploadFile} ./".format(
+			copyCommand = "docker cp {container}:/home/wine/.wine/drive_c/gafferDependenciesBuild/{uploadFile} ./".format(
 			container = containerName,
 			**formatVariables
 			)
