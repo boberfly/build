@@ -193,7 +193,7 @@ if args.docker and not os.path.exists( "/.dockerenv" ) :
 	else :
 		containerBashCommand = "{env} python ./build.py --project {project} --version {version} --upload {upload} --platform {platform}".format( env = containerEnv, **formatVariables )
 
-	containerCommand = "docker run {mounts} --name {name} -i -t {imageTag} -c '{command}'".format(
+	containerCommand = "docker run {mounts} --name {name} -i -t --init {imageTag} -c '{command}'".format(
 		name = containerName,
 		imageTag = formatVariables["imageTag"],
 		mounts = containerMounts,
