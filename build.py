@@ -169,10 +169,10 @@ formatVariables = {
 	"dockerFile" : "Dockerfile" if not "windows" in args.platform else "Dockerfile.win",
 }
 
-if args.project == "gaffer" :
-	formatVariables["uploadFile"] = "{project}-{version}-{platform}.{archiveExt}".format( **formatVariables )
-else :
+if args.project == "dependencies" :
 	formatVariables["uploadFile"] = "gafferDependencies-{version}-{platform}.{archiveExt}".format( **formatVariables )
+else :
+	formatVariables["uploadFile"] = "{project}-{version}-{platform}.{archiveExt}".format( **formatVariables )
 
 # Restart ourselves inside a Docker container so that we use a repeatable
 # build environment.
@@ -205,17 +205,18 @@ if args.docker and not os.path.exists( "/.dockerenv" ) :
 
 	if not args.interactive :
 		# Copy out the generated package.
-		copyCommand = ""
+		baseDir = ""
 		if not args.platform == "windows" :
-			copyCommand = "docker cp {container}:{uploadFile} ./".format(
-			container = containerName,
-			**formatVariables
-			)
+			baseDir = "{project}-{version}-source".format( **formatVariables )
 		else :
-			copyCommand = "docker cp {container}:/home/wine/.wine/drive_c/gafferDependenciesBuild/{uploadFile} ./".format(
-			container = containerName,
-			**formatVariables
-			)
+			baseDir = "/home/wine/.wine/drive_c/build"
+
+		copyCommand = "docker cp {container}:{baseDir}/{uploadFile} ./".format(
+		container = containerName,
+		baseDir = baseDir,
+		**formatVariables
+		)
+
 		sys.stderr.write( copyCommand + "\n" )
 		subprocess.check_call( copyCommand, shell = True )
 

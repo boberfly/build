@@ -1,6 +1,6 @@
 #!/bin/bash
 export ROOT_DIR=C:\\$SRC_DIR_NAME
-export BUILD_DIR=C:\\gafferDependenciesBuild
+export BUILD_DIR=C:\\build
 export ARCHIVE_DIR=C:\\$SRC_DIR_NAME\\archives
 if [[ -z "${CMAKE_GENERATOR}" ]]; then
     export CMAKE_GENERATOR="\"NMake Makefiles JOM\""
