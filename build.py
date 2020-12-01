@@ -130,6 +130,13 @@ parser.add_argument(
 		   "performing the build. This is useful for debugging."
 )
 
+parser.add_argument(
+	"--pythonVariant",
+	default = "2",
+	choices = [ "2", "3" ],
+	help = "The version of Python to build for."
+)
+
 args = parser.parse_args()
 
 if args.interactive :
@@ -187,6 +194,7 @@ formatVariables = {
 	"arnoldRoot" : args.arnoldRoot,
 	"delight" : args.delightRoot,
 	"renderManRoot" : args.renderManRoot,
+	"pythonVariant" : args.pythonVariant,
 	"releaseToken" : "",
 	"auth" : "",
 }
@@ -199,7 +207,7 @@ if githubToken :
 if args.project == "gaffer" :
 	formatVariables["uploadFile"] = "{project}-{version}-{platform}.tar.gz".format( **formatVariables )
 else :
-	formatVariables["uploadFile"] = "gafferDependencies-{version}-{platform}.tar.gz".format( **formatVariables )
+	formatVariables["uploadFile"] = "gafferDependencies-{version}-Python{pythonVariant}-{platform}.tar.gz".format( **formatVariables )
 
 # If we're going to be doing an upload, then check that the release exists. Better
 # to find out now than at the end of a lengthy build.
@@ -267,7 +275,7 @@ if args.docker and not os.path.exists( "/.dockerenv" ) :
 	if args.interactive :
 		containerCommand = "env {env} bash".format( env = containerEnv )
 	else :
-		containerCommand = "env {env} bash -c '/build.py --project {project} --version {version} --upload {upload}'".format( env = containerEnv, **formatVariables )
+		containerCommand = "env {env} bash -c '/build.py --project {project} --version {version} --pythonVariant {pythonVariant} --upload {upload}'".format( env = containerEnv, **formatVariables )
 
 	dockerCommand = "docker run -it {mounts} --name {name} {image}-run {command}".format(
 		mounts = containerMounts,
@@ -344,7 +352,7 @@ if args.project == "gaffer" :
 
 else :
 
-	buildCommand = "env RMAN_ROOT={delight} ARNOLD_ROOT={arnoldRoot} ./build.py --buildDir {cwd}/gafferDependenciesBuild".format(
+	buildCommand = "env RMAN_ROOT={delight} ARNOLD_ROOT={arnoldRoot} ./build.py --variant:Python {pythonVariant} --buildDir {cwd}/gafferDependenciesBuild".format(
 		cwd = os.getcwd(),
 		**formatVariables
 	)
