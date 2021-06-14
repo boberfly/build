@@ -277,7 +277,7 @@ if args.docker and not os.path.exists( "/.dockerenv" ) :
 	else :
 		containerCommand = "env {env} bash -c '/build.py --organisation {organisation} --project {project} --version {version} --pythonVariant {pythonVariant} --upload {upload}'".format( env = containerEnv, **formatVariables )
 
-	dockerCommand = "docker run -it {mounts} --name {name} {image}-run {command}".format(
+	dockerCommand = "docker run --cap-add=SYS_PTRACE -it {mounts} --name {name} {image}-run {command}".format(
 		mounts = containerMounts,
 		name = containerName,
 		image = image,
