@@ -27,11 +27,6 @@ Make a Linux release using Docker on a Mac :
 
 `./build.py --docker 1 --arnoldRoot /path/to/linux/arnoldRoot --delightRoot /path/to/linux/delightRoot --version 0.45.0.0 --upload 1`
 
-Steps remaining to be automated
--------------------------------
-
-- Update https://github.com/GafferHQ/documentation to include the latest docs.
-
 Docker Cheatsheet
 -----------------
 
