@@ -66,7 +66,9 @@ parser.add_argument(
 	"--upload",
 	action = 'store_true',
 	help = "Pushes the build image to dockerhub. You must first have used "
-	       "'docker login' to set your credentials"
+	       "'docker login' to set your credentials. Obsolete, because we now "
+	       "use the GitHub Container Registry instead, with packages being "
+	       "uploaded automatically when we make a release."
 )
 
 parser.add_argument(
