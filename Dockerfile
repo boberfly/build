@@ -42,7 +42,7 @@ RUN yum install -y yum-versionlock && \
 	ln -s /usr/bin/cmake3 /usr/bin/cmake && \
 #
 	yum install -y python2-pip.noarch && \
-	pip install --upgrade pip && \
+	pip install --upgrade "pip < 21.0" && \
 	pip install scons==3.0.5 && \
 #
 	yum install -y \
@@ -82,7 +82,12 @@ RUN yum install -y yum-versionlock && \
 	yum install -y \
 		xkeyboard-config.noarch \
 		fontconfig-devel.x86_64 \
-		libxkbcommon-x11-devel.x86_64 && \
+		libxkbcommon-x11-devel.x86_64 \
+		xcb-util-renderutil-devel \
+		xcb-util-wm-devel \
+		xcb-util-devel \
+		xcb-util-image-devel \
+		xcb-util-keysyms-devel && \
 #
 #	Install Appleseed dependencies
 #
