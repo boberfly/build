@@ -1,3 +1,11 @@
+1.3.0
+=====
+
+- build.py : Added `--pythonVariant` argument.
+- Dockerfile :
+  - Added `xcb` packages necessary for building Qt 5.15.
+  - Fixed `pip` incompatibility with Python 2.
+
 1.2.0
 =====
 
