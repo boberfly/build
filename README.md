@@ -52,12 +52,11 @@ docker run -it <imageName> /bin/bash
 Building the build environment
 ------------------------------
 
-Gaffer and Dependency builds are made using pre-published docker images. These
-environments are built from the Dockerfile in this repository. The
-`build-docker.py` script also aids the build/publish of these images. For
-example:
+Gaffer and Dependency builds are made using pre-published Docker images. These
+images are built from the Dockerfile in this repository. The `build-docker.py`
+script aids the building of the images. For example :
 
- `./build-docker.py --tag 1.1.0 --upload`
+ `./build-docker.py --tag 1.1.0`
 
 > NOTE: The `build-docker.py` uses the simpler flag syntax for most of it options,
 > this means its a little different to `build.py`, we aim to update that over
@@ -75,19 +74,12 @@ to aid updating of the lock list when new packages are added or updates are requ
  - `--update-version-locks` When set this will ignore all version locks and
    update `yum-versionlock.list` to the 'current' version of all packages
    installed during docker's build. The revised file can then be committed and tagged,
-   and a new docker image pushed to docker hub.
+   and a new docker image released.
 
  - `--new-only` When set the existing version lock list will not be cleared.
    This allows the versions to be locked for any new packages installed by
    changes to the `Dockerfile` without affecting the versions of existing
    packages.
-
- - `--upload` Will push the built image to a docker hub tag.
-
-> NOTE: GitHub Packages. We have an Action that will build the Docker image and publish
-> it to GitHub Packages for the repo whenever a release is made. This image is perfectly
-> usable, however, at the time of going to press, it requires a login to pull. We're
-> maintaining the DockerHub hosted images until we have migrated CI/they fix this.
 
 ### Cheat sheet
 
@@ -98,6 +90,14 @@ Added a new package to the image, installed with yum in the Dockerfile:
 Update all packages to latest:
 
 `./build-docker.py --update-version-locks --tag x.x.x`
+
+### Releasing a new version of the build environment
+
+Docker images are automatically published to the GitHub Container Registry
+whenever a new release is made via https://github.com/GafferHQ/build/releases.
+This is performed by the `.github/workflows/dockerImagePublish.yml` workflow.
+Once published, the images can be used by `./build.py` and by the CI process
+for `GafferHQ/gaffer`.
 
 ### A note on Docker's caching mechanism
 
