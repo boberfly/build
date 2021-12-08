@@ -1,6 +1,5 @@
-# We start with CentOS 7, because it is commonly used in
-# production, and meets the glibc requirements of VFXPlatform 2018
-# (2.17 or lower).
+# We start with CentOS 7, because it is commonly used in production, and meets
+# the glibc requirements of VFXPlatform 2022 (2.17 or lower).
 
 FROM centos:7.6.1810
 
@@ -21,7 +20,7 @@ RUN yum install -y yum-versionlock && \
 # NOTE: If you add a new yum package here, make sure you update the version
 # lock files as follows and commit the changes to yum-versionlock.list:
 #
-#   ./build-docker.py --update-package-versions --new-only
+#   ./build-docker.py --update-version-locks --new-only
 #
 # We have to install scl as a separate yum command for some reason
 # otherwise we get `scl not found` errors...
@@ -102,7 +101,8 @@ RUN yum install -y \
 		mesa-dri-drivers.x86_64 \
 		metacity \
 		gnome-themes-standard && \
-# Note: When updating these, also update gaffer/config/azure/build.yaml
+# Note: When updating these, also update the MacOS setup in .github/workflows/main.yaml
+# (in GafferHQ/gaffer).
 	pip install \
 		sphinx==1.8.1 \
 		sphinx_rtd_theme==0.4.3 \
