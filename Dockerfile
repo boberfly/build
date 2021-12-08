@@ -1,7 +1,7 @@
 # We start with CentOS 7, because it is commonly used in production, and meets
 # the glibc requirements of VFXPlatform 2022 (2.17 or lower).
 
-FROM centos:7.6.1810
+FROM centos:7.9.2009
 
 # As we don't want to inadvertently grab newer versions of our yum-installed
 # packages, we use yum-versionlock to keep them pinned. We track the list of
@@ -26,8 +26,7 @@ RUN yum install -y yum-versionlock && \
 # otherwise we get `scl not found` errors...
 #
 	yum install -y centos-release-scl && \
-	sed -i 's/7/7.6.1810/g; s|^#\s*\(baseurl=http://\)mirror|\1vault|g; /mirrorlist/d' /etc/yum.repos.d/CentOS-SCLo-*.repo && \
-	yum install -y devtoolset-6 && \
+	yum install -y devtoolset-9 && \
 #
 #	Install CMake, SCons, and other miscellaneous build tools.
 #	We install SCons via `pip install --egg` rather than by
@@ -118,7 +117,7 @@ RUN yum install -y \
 # correct version will already be installed and we just ignore this...
 	./versionlock.sh lock-new /tmp/packages
 
-# Make GCC 6.3.1 the default compiler, as per VFXPlatform 2018
+# Make GCC 9.3.1 the default compiler, as per VFXPlatform 2022
 #
 # We can't use ENTRYPOINT as it's not allowed on Azure. The ENV/BASH_ENV vars
 # are sourced whenever a non-interactive sh/bash session is started.
@@ -129,7 +128,7 @@ RUN yum install -y \
 # scl environment. Thanks to:
 # https://austindewey.com/2019/03/26/enabling-software-collections-binaries-on-a-docker-image/
 
-RUN printf "unset BASH_ENV PROMPT_COMMAND ENV\nsource scl_source enable devtoolset-6\n" > /usr/bin/scl_enable
+RUN printf "unset BASH_ENV PROMPT_COMMAND ENV\nsource scl_source enable devtoolset-9\n" > /usr/bin/scl_enable
 
 ENV BASH_ENV="/usr/bin/scl_enable" \
 	ENV="/usr/bin/scl_enable" \
