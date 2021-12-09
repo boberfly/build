@@ -28,6 +28,11 @@ RUN yum install -y yum-versionlock && \
 	yum install -y centos-release-scl && \
 	yum install -y devtoolset-9 && \
 #
+#	Install Python 3, and enable it so that `pip install` installs modules for
+#	it rather than the system Python (which is stuck at the unsupported 2.7).
+	yum install -y rh-python38 && \
+	source /opt/rh/rh-python38/enable && \
+#
 #	Install CMake, SCons, and other miscellaneous build tools.
 #	We install SCons via `pip install --egg` rather than by
 #	`yum install` because this prevents a Cortex build failure
@@ -39,9 +44,7 @@ RUN yum install -y yum-versionlock && \
 	yum install -y cmake3 && \
 	ln -s /usr/bin/cmake3 /usr/bin/cmake && \
 #
-	yum install -y python2-pip.noarch && \
-	pip install --upgrade "pip < 21.0" && \
-	pip install scons==3.0.5 && \
+	pip install scons==3.1.2 && \
 #
 	yum install -y \
 		git \
@@ -90,12 +93,12 @@ RUN yum install -y yum-versionlock && \
 #	Install Appleseed dependencies
 #
 	yum install -y \
-		lz4 lz4-devel
+		lz4 lz4-devel && \
 #
 # Install packages needed to generate the
 # Gaffer documentation.
-
-RUN yum install -y \
+#
+	yum install -y \
 		xorg-x11-server-Xvfb \
 		mesa-dri-drivers.x86_64 \
 		metacity \
@@ -103,10 +106,10 @@ RUN yum install -y \
 # Note: When updating these, also update the MacOS setup in .github/workflows/main.yaml
 # (in GafferHQ/gaffer).
 	pip install \
-		sphinx==1.8.1 \
-		sphinx_rtd_theme==0.4.3 \
-		recommonmark==0.5.0 \
-		docutils==0.12 && \
+		sphinx==4.3.1 \
+		sphinx_rtd_theme==1.0.0 \
+		recommonmark==0.7.1 \
+		docutils==0.17.1 && \
 #
 	yum install -y inkscape && \
 #
@@ -117,20 +120,13 @@ RUN yum install -y \
 # correct version will already be installed and we just ignore this...
 	./versionlock.sh lock-new /tmp/packages
 
-# Make GCC 9.3.1 the default compiler, as per VFXPlatform 2022
+# Enable the software collections we want by default, no matter how we enter the
+# container. For details, see :
 #
-# We can't use ENTRYPOINT as it's not allowed on Azure. The ENV/BASH_ENV vars
-# are sourced whenever a non-interactive sh/bash session is started.
-# PROMPT_COMMAND is evaluated before a prompt is displayed in interactive
-# sessions. Using all of these ensures that our scl_enable script
-# is always run, regardless of which shell is being used. The scl_enable script
-# simply unsets these (as its work will be done) and sources the appropriate
-# scl environment. Thanks to:
 # https://austindewey.com/2019/03/26/enabling-software-collections-binaries-on-a-docker-image/
 
-RUN printf "unset BASH_ENV PROMPT_COMMAND ENV\nsource scl_source enable devtoolset-9\n" > /usr/bin/scl_enable
+RUN printf "unset BASH_ENV PROMPT_COMMAND ENV\nsource scl_source enable devtoolset-9 rh-python38\n" > /usr/bin/scl_enable
 
 ENV BASH_ENV="/usr/bin/scl_enable" \
 	ENV="/usr/bin/scl_enable" \
 	PROMPT_COMMAND=". /usr/bin/scl_enable"
-

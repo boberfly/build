@@ -258,7 +258,6 @@
 0:poppler-data-0.4.6-3.el7.*
 0:poppler-glib-0.26.5-43.el7.1.*
 0:pulseaudio-libs-10.0-6.el7_9.*
-0:python2-pip-8.1.2-14.el7.*
 0:python3-3.6.8-18.el7.*
 0:python3-libs-3.6.8-18.el7.*
 0:python3-pip-9.0.3-8.el7.*
@@ -272,6 +271,14 @@
 0:python-setuptools-0.9.8-7.el7.*
 0:rest-0.8.1-2.el7.*
 0:rhash-1.3.4-2.el7.*
+0:rh-python38-2.0-4.el7.*
+0:rh-python38-python-3.8.11-2.el7.*
+0:rh-python38-python-libs-3.8.11-2.el7.*
+0:rh-python38-python-pip-19.3.1-2.el7.*
+0:rh-python38-python-pip-wheel-19.3.1-2.el7.*
+0:rh-python38-python-setuptools-41.6.0-7.el7.*
+0:rh-python38-python-setuptools-wheel-41.6.0-7.el7.*
+0:rh-python38-runtime-2.0-4.el7.*
 0:rsync-3.1.2-10.el7.*
 0:scl-utils-20130529-19.el7.*
 0:setools-libs-3.3.8-4.el7.*
@@ -344,4 +351,4 @@
 4:perl-libs-5.16.3-299.el7_9.*
 4:perl-macros-5.16.3-299.el7_9.*
 4:perl-Time-HiRes-1.9725-3.el7.*
-# Added locks on Wed Dec  8 17:24:45 2021
+# Added locks on Thu Dec  9 09:43:43 2021

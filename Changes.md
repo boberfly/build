@@ -3,6 +3,7 @@
 
 - Dockerfile :
   - Updated GCC to 9.3.1.
+  - Updated Python to 3.8.11.
 
 1.3.0
 =====
