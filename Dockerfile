@@ -108,7 +108,7 @@ RUN yum install -y yum-versionlock && \
 	pip install \
 		sphinx==4.3.1 \
 		sphinx_rtd_theme==1.0.0 \
-		recommonmark==0.7.1 \
+		myst-parser==0.15.2 \
 		docutils==0.17.1 && \
 #
 	yum install -y inkscape && \
