@@ -8,8 +8,8 @@ environment to make your own builds, but it may be useful as a reference.
 Prerequisites
 -------------
 
-- ARNOLD_ROOT environment variable pointing to installation of Arnold 5
-- DELIGHT environment variable pointing to installation of 3delight 13
+- ARNOLD_ROOT environment variable pointing to installation of Arnold 7.1 or later
+- DELIGHT environment variable pointing to installation of 3delight NSI 2.x
 - Docker 17.05 or later
 
 Usage
@@ -17,15 +17,15 @@ Usage
 
 Build and upload a gaffer release :
 
-`./build.py --version 0.45.0.0 --upload 1`
+`./build.py --version 1.4.0.0 --upload 1`
 
 Build and upload a dependencies release :
 
-`./build.py --project dependencies --version 0.45.0.0 --upload 1`
+`./build.py --project dependencies --version 8.0.0 --upload 1`
 
 Make a Linux release using Docker on a Mac :
 
-`./build.py --docker 1 --arnoldRoot /path/to/linux/arnoldRoot --delightRoot /path/to/linux/delightRoot --version 0.45.0.0 --upload 1`
+`./build.py --docker 1 --arnoldRoot /path/to/linux/arnoldRoot --delightRoot /path/to/linux/delightRoot --version 1.4.0.0 --upload 1`
 
 Docker Cheatsheet
 -----------------
