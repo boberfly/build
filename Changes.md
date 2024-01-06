@@ -1,3 +1,12 @@
+3.x.x
+=====
+
+- Dockerfile :
+  - Changed base image to `aswf/ci-base:2023.2`, changes from this image include :
+    - Builds are now performed on Rocky 8.8 with glibc 2.28.
+    - Updated GCC to 11.2.1.
+    - Updated Python to 3.10.11.
+
 2.0.0
 =====
 

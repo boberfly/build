@@ -1,7 +1,8 @@
-# We start with CentOS 7, because it is commonly used in production, and meets
-# the glibc requirements of VFXPlatform 2022 (2.17 or lower).
+# We start with `aswf/ci-base` as it provides a Rocky 8 environment that meets
+# the glibc requirements of VFXPlatform 2023 (2.28 or lower), with many of our
+# build dependencies already pre-installed.
 
-FROM centos:7.9.2009
+FROM aswf/ci-base:2023.2
 
 # As we don't want to inadvertently grab newer versions of our yum-installed
 # packages, we use yum-versionlock to keep them pinned. We track the list of
@@ -13,7 +14,7 @@ FROM centos:7.9.2009
 COPY versionlock.sh ./
 COPY yum-versionlock.list /etc/yum/pluginconf.d/versionlock.list
 
-RUN yum install -y yum-versionlock && \
+RUN yum install -y 'dnf-command(versionlock)' && \
 	./versionlock.sh list-installed /tmp/packages && \
 #
 #
@@ -22,19 +23,8 @@ RUN yum install -y yum-versionlock && \
 #
 #   ./build-docker.py --update-version-locks --new-only
 #
-# We have to install scl as a separate yum command for some reason
-# otherwise we get `scl not found` errors...
-#
-	yum install -y centos-release-scl && \
-	yum install -y devtoolset-9 && \
-#
-#	Install Python 3, and enable it so that `pip install` installs modules for
-#	it rather than the system Python (which is stuck at the unsupported 2.7).
-	yum install -y rh-python38 && \
-	source /opt/rh/rh-python38/enable && \
-#
 #	Install CMake, SCons, and other miscellaneous build tools.
-#	We install SCons via `pip install --egg` rather than by
+#	We install SCons via `pip install` rather than by
 #	`yum install` because this prevents a Cortex build failure
 #	caused by SCons picking up the wrong Python version and being
 #	unable to find its own modules.
@@ -120,13 +110,5 @@ RUN yum install -y yum-versionlock && \
 # correct version will already be installed and we just ignore this...
 	./versionlock.sh lock-new /tmp/packages
 
-# Enable the software collections we want by default, no matter how we enter the
-# container. For details, see :
-#
-# https://austindewey.com/2019/03/26/enabling-software-collections-binaries-on-a-docker-image/
-
-RUN printf "unset BASH_ENV PROMPT_COMMAND ENV\nsource scl_source enable devtoolset-9 rh-python38\n" > /usr/bin/scl_enable
-
-ENV BASH_ENV="/usr/bin/scl_enable" \
-	ENV="/usr/bin/scl_enable" \
-	PROMPT_COMMAND=". /usr/bin/scl_enable"
+# ci-base sets PYTHONPATH, so we override it back to nothing for our env
+ENV PYTHONPATH=
