@@ -16,6 +16,7 @@
     - `xorg-x11-server-Xvfb`.
   - Removed installation of `nasm` as `yasm` is provided by the `ci-base` image.
   - Removed installation of `lz4` and `lz4-devel` as we no longer build Appleseed.
+  - Updated `inkscape` to 1.3.2.
 
 2.0.0
 =====

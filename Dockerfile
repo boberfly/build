@@ -45,7 +45,16 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 		myst-parser==0.15.2 \
 		docutils==0.17.1 && \
 #
-	yum install -y inkscape && \
+# Install Inkscape 1.3.2
+# Inkscape is distrubuted as an AppImage. AppImages seemingly can't be run (easily?) under
+# Docker as they require FUSE, so we extract the image so its contents can be run directly.
+	mkdir /opt/inkscape-1.3.2 && \
+	cd /opt/inkscape-1.3.2 && \
+	curl -O https://media.inkscape.org/dl/resources/file/Inkscape-091e20e-x86_64.AppImage && \
+	chmod a+x Inkscape-091e20e-x86_64.AppImage && \
+	./Inkscape-091e20e-x86_64.AppImage --appimage-extract && \
+	ln -s /opt/inkscape-1.3.2/squashfs-root/AppRun /usr/local/bin/inkscape && \
+	cd - && \
 #
 # Now we've installed all our packages, update yum-versionlock for all the
 # new packages so we can copy the versionlock.list out of the container when we
@@ -56,3 +65,7 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 
 # ci-base sets PYTHONPATH, so we override it back to nothing for our env
 ENV PYTHONPATH=
+#
+# Inkscape 1.3.2 prints "Setting _INKSCAPE_GC=disable as a workaround for broken libgc"
+# every time it is run, so we set it ourselves to silence that
+ENV _INKSCAPE_GC="disable"
