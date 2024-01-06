@@ -15,6 +15,7 @@
     - `xcb-util-renderutil-devel`, `xcb-util-wm-devel`, `xcb-util-devel`, `xcb-util-image-devel`, `xcb-util-keysyms-devel`.
     - `xorg-x11-server-Xvfb`.
   - Removed installation of `nasm` as `yasm` is provided by the `ci-base` image.
+  - Removed installation of `lz4` and `lz4-devel` as we no longer build Appleseed.
 
 2.0.0
 =====

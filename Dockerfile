@@ -30,11 +30,6 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 #
 	pip install scons==3.1.2 && \
 #
-#	Install Appleseed dependencies
-#
-	yum install -y \
-		lz4 lz4-devel && \
-#
 # Install packages needed to generate the
 # Gaffer documentation.
 #
