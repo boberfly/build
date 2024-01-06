@@ -28,7 +28,7 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 #	caused by SCons picking up the wrong Python version and being
 #	unable to find its own modules.
 #
-	pip install scons==3.1.2 && \
+	pip install scons==4.6.0 && \
 #
 # Install packages needed to generate the
 # Gaffer documentation.
