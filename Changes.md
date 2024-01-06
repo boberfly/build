@@ -1,5 +1,5 @@
-3.x.x
-=====
+3.0.0a1
+=======
 
 - Dockerfile :
   - Changed base image to `aswf/ci-base:2023.2`, changes from this image include :
