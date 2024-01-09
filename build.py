@@ -50,7 +50,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument(
 	"--build-env-version",
 	dest = "buildEnvVersion",
-	default = "2.0.0",
+	default = "3.0.0a1",
 	help = "The container image tag to use for docker builds."
 )
 
@@ -77,7 +77,7 @@ parser.add_argument(
 parser.add_argument(
 	"--arnoldRoot",
 	default = os.environ.get( "ARNOLD_ROOT", "" ),
-	help = "The root of an installation of Arnold 6. "
+	help = "The root of an installation of Arnold. "
 	       "Note that if cross-compiling a Linux build "
 	       "using Docker on a Mac, this must point to "
 	       "a Linux build of Arnold."
@@ -86,7 +86,7 @@ parser.add_argument(
 parser.add_argument(
 	"--delightRoot",
 	default = os.environ.get( "DELIGHT", "" ),
-	help = "The root of an installation of 3Delight 13. "
+	help = "The root of an installation of 3Delight. "
 	       "Note that if cross-compiling a Linux build "
 	       "using Docker on a Mac, this must point to "
 	       "a Linux build of 3Delight."

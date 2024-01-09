@@ -1,7 +1,8 @@
-# We start with CentOS 7, because it is commonly used in production, and meets
-# the glibc requirements of VFXPlatform 2022 (2.17 or lower).
+# We start with `aswf/ci-base` as it provides a Rocky 8 environment that meets
+# the glibc requirements of VFXPlatform 2023 (2.28 or lower), with many of our
+# build dependencies already pre-installed.
 
-FROM centos:7.9.2009
+FROM aswf/ci-base:2023.2
 
 # As we don't want to inadvertently grab newer versions of our yum-installed
 # packages, we use yum-versionlock to keep them pinned. We track the list of
@@ -13,7 +14,7 @@ FROM centos:7.9.2009
 COPY versionlock.sh ./
 COPY yum-versionlock.list /etc/yum/pluginconf.d/versionlock.list
 
-RUN yum install -y yum-versionlock && \
+RUN yum install -y 'dnf-command(versionlock)' && \
 	./versionlock.sh list-installed /tmp/packages && \
 #
 #
@@ -22,84 +23,17 @@ RUN yum install -y yum-versionlock && \
 #
 #   ./build-docker.py --update-version-locks --new-only
 #
-# We have to install scl as a separate yum command for some reason
-# otherwise we get `scl not found` errors...
-#
-	yum install -y centos-release-scl && \
-	yum install -y devtoolset-9 && \
-#
-#	Install Python 3, and enable it so that `pip install` installs modules for
-#	it rather than the system Python (which is stuck at the unsupported 2.7).
-	yum install -y rh-python38 && \
-	source /opt/rh/rh-python38/enable && \
-#
-#	Install CMake, SCons, and other miscellaneous build tools.
-#	We install SCons via `pip install --egg` rather than by
+#	We install SCons via `pip install` rather than by
 #	`yum install` because this prevents a Cortex build failure
 #	caused by SCons picking up the wrong Python version and being
 #	unable to find its own modules.
 #
-	yum install -y epel-release && \
-#
-	yum install -y cmake3 && \
-	ln -s /usr/bin/cmake3 /usr/bin/cmake && \
-#
-	pip install scons==3.1.2 && \
-#
-	yum install -y \
-		git \
-		patch \
-		doxygen && \
-#
-#	Install boost dependencies (needed by boost::iostreams)
-#
-	yum install -y bzip2-devel && \
-#
-#	Install JPEG dependencies
-#
-	yum install -y nasm && \
-#
-#	Install PNG dependencies && \
-#
-	yum install -y zlib-devel && \
-#
-#	Install GLEW dependencies
-#
-	yum install -y \
-		libX11-devel \
-		mesa-libGL-devel \
-		mesa-libGLU-devel \
-		libXmu-devel \
-		libXi-devel && \
-#
-#	Install OSL dependencies
-#
-	yum install -y \
-		flex \
-		bison && \
-#
-#	Install Qt dependencies
-#
-	yum install -y \
-		xkeyboard-config.noarch \
-		fontconfig-devel.x86_64 \
-		libxkbcommon-x11-devel.x86_64 \
-		xcb-util-renderutil-devel \
-		xcb-util-wm-devel \
-		xcb-util-devel \
-		xcb-util-image-devel \
-		xcb-util-keysyms-devel && \
-#
-#	Install Appleseed dependencies
-#
-	yum install -y \
-		lz4 lz4-devel && \
+	pip install scons==4.6.0 && \
 #
 # Install packages needed to generate the
 # Gaffer documentation.
 #
 	yum install -y \
-		xorg-x11-server-Xvfb \
 		mesa-dri-drivers.x86_64 \
 		metacity \
 		gnome-themes-standard && \
@@ -111,7 +45,16 @@ RUN yum install -y yum-versionlock && \
 		myst-parser==0.15.2 \
 		docutils==0.17.1 && \
 #
-	yum install -y inkscape && \
+# Install Inkscape 1.3.2
+# Inkscape is distrubuted as an AppImage. AppImages seemingly can't be run (easily?) under
+# Docker as they require FUSE, so we extract the image so its contents can be run directly.
+	mkdir /opt/inkscape-1.3.2 && \
+	cd /opt/inkscape-1.3.2 && \
+	curl -O https://media.inkscape.org/dl/resources/file/Inkscape-091e20e-x86_64.AppImage && \
+	chmod a+x Inkscape-091e20e-x86_64.AppImage && \
+	./Inkscape-091e20e-x86_64.AppImage --appimage-extract && \
+	ln -s /opt/inkscape-1.3.2/squashfs-root/AppRun /usr/local/bin/inkscape && \
+	cd - && \
 #
 # Now we've installed all our packages, update yum-versionlock for all the
 # new packages so we can copy the versionlock.list out of the container when we
@@ -120,13 +63,9 @@ RUN yum install -y yum-versionlock && \
 # correct version will already be installed and we just ignore this...
 	./versionlock.sh lock-new /tmp/packages
 
-# Enable the software collections we want by default, no matter how we enter the
-# container. For details, see :
+# ci-base sets PYTHONPATH, so we override it back to nothing for our env
+ENV PYTHONPATH=
 #
-# https://austindewey.com/2019/03/26/enabling-software-collections-binaries-on-a-docker-image/
-
-RUN printf "unset BASH_ENV PROMPT_COMMAND ENV\nsource scl_source enable devtoolset-9 rh-python38\n" > /usr/bin/scl_enable
-
-ENV BASH_ENV="/usr/bin/scl_enable" \
-	ENV="/usr/bin/scl_enable" \
-	PROMPT_COMMAND=". /usr/bin/scl_enable"
+# Inkscape 1.3.2 prints "Setting _INKSCAPE_GC=disable as a workaround for broken libgc"
+# every time it is run, so we set it ourselves to silence that
+ENV _INKSCAPE_GC="disable"
