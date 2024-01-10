@@ -63,6 +63,11 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 # correct version will already be installed and we just ignore this...
 	./versionlock.sh lock-new /tmp/packages
 
+# Set WORKDIR back to / to match the behaviour of our CentOS 7 Dockerfile.
+# This makes it easier to deal with copying build artifacts as they will be
+# in the same location in both containers.
+WORKDIR /
+
 # ci-base sets PYTHONPATH, so we override it back to nothing for our env
 ENV PYTHONPATH=
 #
