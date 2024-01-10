@@ -1,3 +1,9 @@
+3.0.0ax
+=======
+
+- Dockerfile :
+  - Set `WORKDIR` to `/`.
+
 3.0.0a1
 =======
 
