@@ -44,7 +44,7 @@ RUN yum install -y yum-versionlock && \
 	yum install -y cmake3 && \
 	ln -s /usr/bin/cmake3 /usr/bin/cmake && \
 #
-	pip install scons==3.1.2 && \
+	pip install scons==4.6.0 && \
 #
 	yum install -y \
 		git \
