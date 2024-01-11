@@ -95,6 +95,13 @@ RUN yum install -y yum-versionlock && \
 	yum install -y \
 		lz4 lz4-devel && \
 #
+#	Install Python dependencies (needed for Python ssl and sqlite3 modules)
+#
+	yum install -y \
+		openssl-devel \
+		openssl11-devel \
+		sqlite-devel && \
+#
 # Install packages needed to generate the
 # Gaffer documentation.
 #
