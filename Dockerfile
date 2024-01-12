@@ -44,7 +44,7 @@ RUN yum install -y yum-versionlock && \
 	yum install -y cmake3 && \
 	ln -s /usr/bin/cmake3 /usr/bin/cmake && \
 #
-	pip install scons==3.1.2 && \
+	pip install scons==4.6.0 && \
 #
 	yum install -y \
 		git \
@@ -94,6 +94,13 @@ RUN yum install -y yum-versionlock && \
 #
 	yum install -y \
 		lz4 lz4-devel && \
+#
+#	Install Python dependencies (needed for Python ssl and sqlite3 modules)
+#
+	yum install -y \
+		openssl-devel \
+		openssl11-devel \
+		sqlite-devel && \
 #
 # Install packages needed to generate the
 # Gaffer documentation.
