@@ -5,6 +5,7 @@
   - Added `sqlite-devel` package necessary for building Python with `sqlite3` support.
   - Added `openssl-devel` and `openssl11-devel` packages necessary for building Python with support for OpenSSL 1.1.1.
   - Updated SCons to 4.6.0.
+  - Updated CMake to 3.27.2.
 
 2.0.0
 =====
