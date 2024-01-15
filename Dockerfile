@@ -3,6 +3,11 @@
 
 FROM centos:7.9.2009
 
+# Identify the build environment. This can be used by build processes for
+# environment specific behaviour such as naming artifacts built from this
+# container.
+ENV GAFFER_BUILD_ENVIRONMENT="gcc9"
+
 # As we don't want to inadvertently grab newer versions of our yum-installed
 # packages, we use yum-versionlock to keep them pinned. We track the list of
 # image packages here, then compare after our install steps to see what was

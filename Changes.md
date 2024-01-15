@@ -2,6 +2,7 @@
 =====
 
 - Dockerfile :
+  - Added `GAFFER_BUILD_ENVIRONMENT="gcc9"` environment variable.
   - Added `sqlite-devel` package necessary for building Python with `sqlite3` support.
   - Added `openssl-devel` and `openssl11-devel` packages necessary for building Python with support for OpenSSL 1.1.1.
   - Updated SCons to 4.6.0.
