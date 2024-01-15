@@ -1,3 +1,9 @@
+3.0.0ax
+=======
+
+- Dockerfile :
+  - Added `GAFFER_BUILD_ENVIRONMENT="gcc11"` environment variable.
+
 3.0.0a2
 =======
 
