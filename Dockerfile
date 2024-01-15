@@ -41,8 +41,9 @@ RUN yum install -y yum-versionlock && \
 #
 	yum install -y epel-release && \
 #
-	yum install -y cmake3 && \
-	ln -s /usr/bin/cmake3 /usr/bin/cmake && \
+	curl -L "https://github.com/Kitware/CMake/releases/download/v3.27.2/cmake-3.27.2-Linux-x86_64.sh" -o /tmp/cmake-3.27.2-Linux-x86_64.sh && \
+	sh /tmp/cmake-3.27.2-Linux-x86_64.sh --skip-license --prefix=/usr/local --exclude-subdir && \
+	rm /tmp/cmake-3.27.2-Linux-x86_64.sh && \
 #
 	pip install scons==4.6.0 && \
 #
