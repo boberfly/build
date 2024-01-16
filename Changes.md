@@ -1,3 +1,9 @@
+2.x.x
+=====
+
+- Dockerfile :
+  - Fixed issues with `github` module on CI by installing `urllib3` 1.26.18.
+
 2.1.0
 =====
 

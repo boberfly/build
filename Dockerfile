@@ -119,6 +119,7 @@ RUN yum install -y yum-versionlock && \
 # Note: When updating these, also update the MacOS setup in .github/workflows/main.yaml
 # (in GafferHQ/gaffer).
 	pip install \
+		urllib3==1.26.18 \
 		sphinx==4.3.1 \
 		sphinx_rtd_theme==1.0.0 \
 		myst-parser==0.15.2 \
