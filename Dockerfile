@@ -46,6 +46,12 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 # (in GafferHQ/gaffer).
 	pip install \
 		sphinx==4.3.1 \
+		sphinxcontrib-applehelp==1.0.4 \
+		sphinxcontrib-devhelp==1.0.2 \
+		sphinxcontrib-htmlhelp==2.0.1 \
+		sphinxcontrib-jsmath==1.0.1 \
+		sphinxcontrib-serializinghtml==1.1.5 \
+		sphinxcontrib-qthelp==1.0.3 \
 		sphinx_rtd_theme==1.0.0 \
 		myst-parser==0.15.2 \
 		docutils==0.17.1 && \

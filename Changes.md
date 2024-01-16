@@ -1,3 +1,9 @@
+3.0.0ax
+=======
+
+- Dockerfile :
+  - Fixed `sphinx` incompatibility with automatically installed dependencies by installing specific versions of `sphinxcontrib` packages.
+
 3.0.0a3
 =======
 
