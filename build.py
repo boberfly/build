@@ -175,8 +175,19 @@ if args.renderManRoot :
 		parser.exit( 1, "{0} not found\n".format( renderManLib ) )
 
 # Build a little dictionary of variables we'll need over and over again
-# in string formatting operations, and use it to figure out what
-# package we will eventually be generating.
+# in string formatting operations, and use it to figure out the name
+# for the package we will eventually be generating.
+
+if args.docker :
+	# If we're going to build with Docker, make sure we're using the
+	# same value for `GAFFER_BUILD_ENVIRONMENT`.
+	subprocess.check_call( [ "docker", "pull", "{}:{}".format( args.dockerImage, args.dockerImageVersion ) ] )
+	dockerInfo = subprocess.check_output(
+		[ "docker", "image", "inspect", "{}:{}".format( args.dockerImage, args.dockerImageVersion ) ]
+	)
+	for env in json.loads( dockerInfo )[0]["Config"]["Env"] :
+		if env.startswith( "GAFFER_BUILD_ENVIRONMENT=" ) :
+			os.environ["GAFFER_BUILD_ENVIRONMENT"] = env.partition( "=" )[2]
 
 formatVariables = {
 	"organisation" : args.organisation,
@@ -184,6 +195,7 @@ formatVariables = {
 	"version" : args.version,
 	"upload" : args.upload,
 	"platform" : platform,
+	"buildEnvironment" : "-{}".format( os.environ["GAFFER_BUILD_ENVIRONMENT"] ) if "GAFFER_BUILD_ENVIRONMENT" in os.environ else "",
 	"arnoldRoot" : args.arnoldRoot,
 	"delight" : args.delightRoot,
 	"renderManRoot" : args.renderManRoot,
@@ -197,9 +209,9 @@ if githubToken :
 	formatVariables[ "auth" ] = '-H "Authorization: token %s"' % githubToken
 
 if args.project == "gaffer" :
-	formatVariables["uploadFile"] = "{project}-{version}-{platform}.tar.gz".format( **formatVariables )
+	formatVariables["buildName"] = "{project}-{version}-{platform}".format( **formatVariables )
 else :
-	formatVariables["uploadFile"] = "gafferDependencies-{version}-{platform}.tar.gz".format( **formatVariables )
+	formatVariables["buildName"] = "gafferDependencies-{version}-{platform}{buildEnvironment}".format( **formatVariables )
 
 # If we're going to be doing an upload, then check that the release exists. Better
 # to find out now than at the end of a lengthy build.
@@ -280,7 +292,7 @@ if args.docker :
 
 	if not args.interactive :
 		# Copy out the generated package.
-		copyCommand = "docker cp {container}:/{project}-{version}-source/{uploadFile} ./".format(
+		copyCommand = "docker cp {container}:/{project}-{version}-source/{buildName}.tar.gz ./".format(
 			container = containerName,
 			**formatVariables
 		)
@@ -338,13 +350,13 @@ if args.project == "gaffer" :
 	# preferred python from the environment. SCons itself
 	# unfortunately hardcodes `/usr/bin/python`, which might not
 	# have the modules we need to build the docs.
-	buildCommand = "python `which scons` package PACKAGE_FILE={uploadFile} ENV_VARS_TO_IMPORT=PATH DELIGHT_ROOT={delight} ARNOLD_ROOT={arnoldRoot} RENDERMAN_ROOT={renderManRoot} OPTIONS='' -j {cpus}".format(
+	buildCommand = "python `which scons` package PACKAGE_FILE={buildName}.tar.gz ENV_VARS_TO_IMPORT=PATH DELIGHT_ROOT={delight} ARNOLD_ROOT={arnoldRoot} RENDERMAN_ROOT={renderManRoot} OPTIONS='' -j {cpus}".format(
 		cpus=multiprocessing.cpu_count(), **formatVariables
 	)
 
 else :
 
-	buildCommand = "env RMAN_ROOT={delight} ARNOLD_ROOT={arnoldRoot} ./build.py --buildDir {cwd}/gafferDependenciesBuild".format(
+	buildCommand = "env RMAN_ROOT={delight} ARNOLD_ROOT={arnoldRoot} ./build.py --buildDir {cwd}/{buildName} --package {cwd}/{buildName}.tar.gz".format(
 		cwd = os.getcwd(),
 		**formatVariables
 	)
@@ -359,12 +371,11 @@ if args.upload :
 	uploadCommand = (
 		'curl {auth}'
 		' -H "Content-Type: application/zip"'
-		' --data-binary @{uploadFile} "{uploadURL}"'
+		' --data-binary @{buildName}.tar.gz "{uploadURL}"'
 		' -o /tmp/curlResult.txt' # Must specify output file in order to get progress output
 	).format(
-		uploadURL = "https://uploads.github.com/repos/{organisation}/{project}/releases/{id}/assets?name={uploadName}".format(
+		uploadURL = "https://uploads.github.com/repos/{organisation}/{project}/releases/{id}/assets?name={buildName}.tar.gz".format(
 			id = releaseId(),
-			uploadName = os.path.basename( formatVariables["uploadFile"] ),
 			**formatVariables
 		),
 		**formatVariables
