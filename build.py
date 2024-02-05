@@ -48,20 +48,6 @@ import multiprocessing
 parser = argparse.ArgumentParser()
 
 parser.add_argument(
-	"--build-env-version",
-	dest = "buildEnvVersion",
-	default = "2.1.1",
-	help = "The container image tag to use for docker builds."
-)
-
-parser.add_argument(
-	"--build-env-image",
-	dest = "buildEnvImage",
-	default = "ghcr.io/gafferhq/build/build",
-	help = "The container image to use for docker builds."
-)
-
-parser.add_argument(
 	"--organisation",
 	default = "GafferHQ",
 	help = "The GitHub organisation containing the project to build."
@@ -120,6 +106,20 @@ parser.add_argument(
 	default = "linux" in sys.platform,
 	help = "Performs the build using a Docker container. This provides a "
 	       "known build platform so that builds are repeatable."
+)
+
+parser.add_argument(
+	"--docker-image",
+	dest = "dockerImage",
+	default = "ghcr.io/gafferhq/build/build",
+	help = "The container image to use for docker builds."
+)
+
+parser.add_argument(
+	"--docker-image-version",
+	dest = "dockerImageVersion",
+	default = "2.1.1",
+	help = "The Docker image tag to use for Docker builds."
 )
 
 parser.add_argument(
@@ -222,7 +222,7 @@ if args.upload and releaseId() is None :
 # build environment.
 if args.docker and not os.path.exists( "/.dockerenv" ) :
 
-	image = "%s:%s" % ( args.buildEnvImage, args.buildEnvVersion )
+	image = "%s:%s" % ( args.dockerImage, args.dockerImageVersion )
 	containerName = "gafferhq-build-{id}".format( id = uuid.uuid1() )
 
 	# We don't keep build.py in the images (otherwise we'd have to maintain
