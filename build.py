@@ -220,7 +220,7 @@ if args.upload and releaseId() is None :
 
 # Restart ourselves inside a Docker container so that we use a repeatable
 # build environment.
-if args.docker and not os.path.exists( "/.dockerenv" ) :
+if args.docker :
 
 	image = "%s:%s" % ( args.dockerImage, args.dockerImageVersion )
 	containerName = "gafferhq-build-{id}".format( id = uuid.uuid1() )
@@ -267,7 +267,7 @@ if args.docker and not os.path.exists( "/.dockerenv" ) :
 	if args.interactive :
 		containerCommand = "env {env} bash".format( env = containerEnv )
 	else :
-		containerCommand = "env {env} bash -c '/build.py --organisation {organisation} --project {project} --version {version} --upload {upload}'".format( env = containerEnv, **formatVariables )
+		containerCommand = "env {env} bash -c '/build.py --docker 0 --organisation {organisation} --project {project} --version {version} --upload {upload}'".format( env = containerEnv, **formatVariables )
 
 	dockerCommand = "docker run --cap-add=SYS_PTRACE -it {mounts} --name {name} {image}-run {command}".format(
 		mounts = containerMounts,
