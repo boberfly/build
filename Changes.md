@@ -37,6 +37,22 @@
   - Updated `inkscape` to 1.3.2.
   - Updated `scons` to 4.6.0.
 
+2.1.1
+=====
+
+- Dockerfile :
+  - Fixed issues with `github` module on CI by installing `urllib3` 1.26.18.
+
+2.1.0
+=====
+
+- Dockerfile :
+  - Added `GAFFER_BUILD_ENVIRONMENT="gcc9"` environment variable.
+  - Added `sqlite-devel` package necessary for building Python with `sqlite3` support.
+  - Added `openssl-devel` and `openssl11-devel` packages necessary for building Python with support for OpenSSL 1.1.1.
+  - Updated SCons to 4.6.0.
+  - Updated CMake to 3.27.2.
+
 2.0.0
 =====
 
