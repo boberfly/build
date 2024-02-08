@@ -1,4 +1,4 @@
-3.0.0ax
+3.0.0a5
 =======
 
 - Dockerfile : Set `OPTIX_ROOT_DIR` environment variable.
