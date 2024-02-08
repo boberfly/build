@@ -85,3 +85,6 @@ ENV PYTHONPATH=
 # Inkscape 1.3.2 prints "Setting _INKSCAPE_GC=disable as a workaround for broken libgc"
 # every time it is run, so we set it ourselves to silence that
 ENV _INKSCAPE_GC="disable"
+
+# Make the Optix SDK available for Cycles builds.
+ENV OPTIX_ROOT_DIR=/usr/local/NVIDIA-OptiX-SDK-7.3.0
