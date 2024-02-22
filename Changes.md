@@ -1,4 +1,4 @@
-3.0.0ax
+3.0.0a6
 =======
 
 - Dockerfile : Removed `cuda-nsight-compute-11-8.x86_64`, `libcublas-devel-11-8-11.11.3.6-1.x86_64`, `sonar-scanner-4.8.0.2856-linux`, and various intermediate installation files to reduce container size.
