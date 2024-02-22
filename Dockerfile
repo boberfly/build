@@ -65,6 +65,7 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 	chmod a+x Inkscape-091e20e-x86_64.AppImage && \
 	./Inkscape-091e20e-x86_64.AppImage --appimage-extract && \
 	ln -s /opt/inkscape-1.3.2/squashfs-root/AppRun /usr/local/bin/inkscape && \
+	rm -f Inkscape-091e20e-x86_64.AppImage && \
 	cd - && \
 #
 # Trim out a few things we don't need. We inherited a lot more than we need from
@@ -73,6 +74,7 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 # bells and whistles we don't need, and is responsible for at least 5Gb of the
 # total image size.
 	rm -rf /var/opt/sonar-scanner-4.8.0.2856-linux && \
+	rm -rf /tmp/downloads && \
 	dnf remove -y \
 		cuda-nsight-compute-11-8.x86_64 \
 		libcublas-devel-11-8-11.11.3.6-1.x86_64 && \
