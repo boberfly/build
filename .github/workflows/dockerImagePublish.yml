@@ -38,11 +38,11 @@ jobs:
 
     - uses: actions/checkout@v2
 
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag image
+    - name: Build the container image
+      run: podman build . --file Dockerfile --tag image --squash-all
 
     - name: Log into registry
-      run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      run: echo "${{ secrets.GITHUB_TOKEN }}" | podman login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
 
     - name: Push image
       run: |
@@ -54,5 +54,5 @@ jobs:
         echo IMAGE_ID=$IMAGE_ID
         echo VERSION=$VERSION
 
-        docker tag image $IMAGE_ID:$VERSION
-        docker push $IMAGE_ID:$VERSION
+        podman tag image $IMAGE_ID:$VERSION
+        podman push $IMAGE_ID:$VERSION
