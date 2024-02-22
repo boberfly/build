@@ -5,6 +5,7 @@
 - CI :
   - Container image is now built with `podman` rather than `docker`.
   - Container image is built with `--squash-all` in order to reduce overall container size.
+  - References to `docker.pkg.github.com` have been changed to `ghcr.io`.
 
 3.0.0a5
 =======
