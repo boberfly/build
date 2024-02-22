@@ -1,3 +1,12 @@
+3.0.0ax
+=======
+
+- Dockerfile : Removed `cuda-nsight-compute-11-8.x86_64`, `libcublas-devel-11-8-11.11.3.6-1.x86_64`, `sonar-scanner-4.8.0.2856-linux`, and various intermediate installation files to reduce container size.
+- CI :
+  - Container image is now built with `podman` rather than `docker`.
+  - Container image is built with `--squash-all` in order to reduce overall container size.
+  - References to `docker.pkg.github.com` have been changed to `ghcr.io`.
+
 3.0.0a5
 =======
 
