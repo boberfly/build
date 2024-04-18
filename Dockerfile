@@ -72,12 +72,26 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 # `aswf/ci-base`, and we run out of disk space on GitHub Actions if our container
 # is too big. A particular offender is CUDA, which comes with all sorts of
 # bells and whistles we don't need, and is responsible for at least 5Gb of the
-# total image size.
+# total image size. We also remove much of the `ci-base` provided builds of LLVM
+# and Boost. Removing these plus some additional CUDA packages brings the image
+# size down to ~3.6GB.
+	rm -rf /usr/local/lib/clang && \
+	rm -f /usr/local/lib/libclang* && \
+	rm -f /usr/local/lib/libLLVM* && \
+	rm -f /usr/local/lib/libLTO* && \
+	rm -f /usr/local/lib/liblld* && \
+	rm -f /usr/local/lib/libboost* && \
+	rm -f /usr/local/bin/clang* && \
+	rm -f /usr/local/bin/ll* && \
+	rm -f /usr/local/bin/opt && \
+	rm -f /usr/local/bin/bugpoint && \
 	rm -rf /var/opt/sonar-scanner-4.8.0.2856-linux && \
 	rm -rf /tmp/downloads && \
 	dnf remove -y \
 		cuda-nsight-compute-11-8.x86_64 \
-		libcublas-devel-11-8-11.11.3.6-1.x86_64 && \
+		libcublas-devel-11-8-11.11.3.6-1.x86_64 \
+		libcublas-11-8 libnccl libnccl-devel \
+		libnpp-11-8 libnpp-devel-11-8 cuda-cupti-11-8 && \
 	dnf clean all && \
 #
 # Now we've installed all our packages, update yum-versionlock for all the

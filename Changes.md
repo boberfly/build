@@ -1,3 +1,8 @@
+3.0.0ax
+=======
+
+- Dockerfile : Removed `libcublas-11-8`, `libnccl`, `libnccl-devel`, `libnpp-11-8`, `libnpp-devel-11-8`, `cuda-cupti-11-8`, and local installations of LLVM and Boost to reduce container size.
+
 3.0.0a6
 =======
 
