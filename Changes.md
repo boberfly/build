@@ -1,43 +1,10 @@
-3.0.0ax
-=======
+3.0.0
+=====
 
-- Dockerfile : Removed `libcublas-11-8`, `libnccl`, `libnccl-devel`, `libnpp-11-8`, `libnpp-devel-11-8`, `cuda-cupti-11-8`, and local installations of LLVM and Boost to reduce container size.
-
-3.0.0a6
-=======
-
-- Dockerfile : Removed `cuda-nsight-compute-11-8.x86_64`, `libcublas-devel-11-8-11.11.3.6-1.x86_64`, `sonar-scanner-4.8.0.2856-linux`, and various intermediate installation files to reduce container size.
 - CI :
   - Container image is now built with `podman` rather than `docker`.
   - Container image is built with `--squash-all` in order to reduce overall container size.
   - References to `docker.pkg.github.com` have been changed to `ghcr.io`.
-
-3.0.0a5
-=======
-
-- Dockerfile : Set `OPTIX_ROOT_DIR` environment variable.
-
-3.0.0a4
-=======
-
-- Dockerfile :
-  - Fixed `sphinx` incompatibility with automatically installed dependencies by installing specific versions of `sphinxcontrib` packages.
-
-3.0.0a3
-=======
-
-- Dockerfile :
-  - Added `GAFFER_BUILD_ENVIRONMENT="gcc11"` environment variable.
-
-3.0.0a2
-=======
-
-- Dockerfile :
-  - Set `WORKDIR` to `/`.
-
-3.0.0a1
-=======
-
 - Dockerfile :
   - Changed base image to `aswf/ci-base:2023.2`, changes from this image include :
     - Builds are now performed on Rocky 8.8 with glibc 2.28.
@@ -55,6 +22,12 @@
   - Removed installation of `lz4` and `lz4-devel` as we no longer build Appleseed.
   - Updated `inkscape` to 1.3.2.
   - Updated `scons` to 4.6.0.
+  - Set `WORKDIR` to `/`.
+  - Set `OPTIX_ROOT_DIR` environment variable.
+  - Added `GAFFER_BUILD_ENVIRONMENT="gcc11"` environment variable.
+  - Fixed `sphinx` incompatibility with automatically installed dependencies by installing specific versions of `sphinxcontrib` packages.
+  - Removed unnecessary packages provided by the `ci-base` image to reduce container size :
+    - `cuda-nsight-compute-11-8.x86_64`, `libcublas-devel-11-8-11.11.3.6-1.x86_64`, `sonar-scanner-4.8.0.2856-linux`, `libcublas-11-8`, `libnccl`, `libnccl-devel`, `libnpp-11-8`, `libnpp-devel-11-8`, `cuda-cupti-11-8` and various intermediate installation files.
 
 2.1.1
 =====
