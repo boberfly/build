@@ -19,7 +19,9 @@ ENV GAFFER_BUILD_ENVIRONMENT="gcc11"
 COPY versionlock.sh ./
 COPY yum-versionlock.list /etc/yum/pluginconf.d/versionlock.list
 
-RUN yum install -y 'dnf-command(versionlock)' && \
+RUN yum install -y \
+	https://repo.radeon.com/amdgpu-install/6.1/rhel/8.8/amdgpu-install-6.1.60100-1.el8.noarch.rpm \
+	'dnf-command(versionlock)' && \
 	./versionlock.sh list-installed /tmp/packages && \
 #
 #
@@ -41,7 +43,12 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 	yum install -y \
 		mesa-dri-drivers.x86_64 \
 		metacity \
-		gnome-themes-standard && \
+		gnome-themes-standard \
+# Install ROCm to build the HIP backend for Cycles.
+		hip-devel \
+		rocm-llvm \
+		rocm-core \
+		rocm-device-libs && \
 # Note: When updating these, also update the MacOS setup in .github/workflows/main.yaml
 # (in GafferHQ/gaffer).
 	pip install \
