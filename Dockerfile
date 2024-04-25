@@ -68,6 +68,15 @@ RUN yum install -y 'dnf-command(versionlock)' && \
 	rm -f Inkscape-091e20e-x86_64.AppImage && \
 	cd - && \
 #
+# Install ISPC 1.23.0 for OpenImageDenoise, Embree
+	mkdir /opt/ispc-1.23.0 && \
+	cd /opt/ispc-1.23.0 && \
+	curl -o ispc.tar.gz https://github.com/ispc/ispc/releases/download/v1.23.0/ispc-v1.23.0-linux.tar.gz && \
+	tar --strip-components=1 -xf ispc.tar.gz && \
+	ln -s /opt/ispc-1.23.0/bin/ispc /usr/local/bin/ispc && \
+	rm -f ispc.tar.gz && \
+	cd - && \
+#
 # Trim out a few things we don't need. We inherited a lot more than we need from
 # `aswf/ci-base`, and we run out of disk space on GitHub Actions if our container
 # is too big. A particular offender is CUDA, which comes with all sorts of
